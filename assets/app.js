@@ -25,13 +25,13 @@
     const width = hero ? 640 : 720, height = hero ? 390 : 410;
     const left = 42, right = width - 46, top = 46, floor = 300;
     const seriesByType = {
-      pivot: [79,82,85,89,93,99,104,102,99,96,94,91,89,87,86,85,86,85,84,87,92,95,94,98,101,103,102,106,108,107],
+      pivot: [79,82,85,89,93,99,104,102,99,96,94,91,89,87,86,85,84.8,84.5,84,87,92,95,94,98,101,103,102,106,108,107],
       pullback: [79,82,86,89,93,97,103,106,105,102,100,98,97,94,93,91,90,89,88,91,95,97,96,100,103,105,103,108,109,110],
       breakout: [82,86,91,95,99,103,101,97,94,97,99,96,94,96,95,97,96,97,96,98,103,105,104,108,110,111,109,112,114,115]
     };
     const prices = [...(seriesByType[type] || seriesByType.pivot)];
     const support = type === 'breakout' ? 93 : type === 'pullback' ? 87 : 85;
-    const trigger = type === 'breakout' ? 101 : type === 'pullback' ? 93 : 89;
+    const trigger = type === 'breakout' ? 101 : type === 'pullback' ? 93 : 88.2;
     const y = price => top + (118 - price) / 44 * (floor - top);
     const gap = (right - left) / prices.length;
     const x = i => left + gap * (i + .5);
@@ -49,6 +49,10 @@
     }
     if (stage >= 2 || hero) {
       svg += `<line x1="${x(16)}" y1="${y(trigger)}" x2="${right}" y2="${y(trigger)}" stroke="#e0b77c" stroke-dasharray="3 5"/><text x="${x(16)}" y="${y(trigger)-9}" fill="#ecc699" font-size="10">${type === 'breakout' ? '整理上沿 / 触发区域' : '转强 / 触发区域'}</text>`;
+    }
+    if (type === 'pivot' && (stage >= 1 || hero)) {
+      const low = Math.min(prices[18] + Math.sin(38)*.8, prices[19]) - 1.1;
+      svg += `<rect x="${x(19)-gap*.44}" y="${y(89.5)}" width="${gap*.88}" height="${y(low-1)-y(89.5)}" fill="none" stroke="#e0b77c" stroke-dasharray="2 3"/><line x1="${x(19)}" y1="${y(low)}" x2="${right}" y2="${y(low)}" stroke="#bc826c" stroke-dasharray="2 4"/><text x="${x(20)+12}" y="${y(low)+18}" fill="#d4a08c" font-size="9">确认阳线低点 / 失效参考</text>`;
     }
     prices.forEach((close, i) => {
       const open = i ? prices[i-1] + Math.sin(i*2)*.8 : close - 2;
